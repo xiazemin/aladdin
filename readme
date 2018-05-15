@@ -1,0 +1,10 @@
+数据目录
+/aladdin/user/IP/2018-05-14-11/case1
+raw.log   //业务日志文件
+logConfig.json  //{"log_level":7}
+log
+   debug.log
+   notice.log
+   warn.log
+globalConfig.json  //{"ip":"127.0.0.1","port":8080}
+configParams.json   //需要更新的业务参数字段
