@@ -25,21 +25,40 @@ func Load(filename string) []byte {
 	return datajson
 }
 
-func GetLogLevel (filename string) *LogConfig  {
+func GetLogLevel (filename string) (*LogConfig,error)  {
 	v:=new(LogConfig)
 	datajson:=Load(filename)
 	//fmt.Print(string(datajson))
 	err := json.Unmarshal(datajson, v)
-	if(err!=nil){
-		fmt.Print(err)
-		return &LogConfig{}
-	}
-	return  v
+	return  v,err
 }
 
+func SetLogLevel(filename string){
+	_, err1 := os.Stat(filename)
+	var (
+		logConf *os.File
+		err error
+	)
+	if err1!=nil{
+		logConf,err = os.Create(filename)
+
+	}else {
+		logConf,err=os.OpenFile(filename,os.O_RDWR|os.O_CREATE|os.O_APPEND,0644)
+	}
+	defer logConf.Close()
+	if err != nil {
+		log.Fatalln("open file error !")
+	}
+	n3, err := logConf.WriteString("{\"log_level\":7}")
+	fmt.Println(fmt.Sprintf("\n%d words write to logConfig.json",n3))
+
+}
 
 func log2file(dir string,level string,prefix string,content interface{},trace string){
-
+	errDir := os.MkdirAll(dir+"log/", 0777)
+	if errDir != nil {
+		fmt.Printf("%s", errDir)
+	}
 	// 定义一个文件
 	fileName := dir+"log/"+level
 	_, err1 := os.Stat(fileName)
@@ -62,7 +81,12 @@ func log2file(dir string,level string,prefix string,content interface{},trace st
 }
 
 func LogDebug(dir string,content interface{}){
-	logLevel:=GetLogLevel(dir+logConfig)
+	logLevel,err:=GetLogLevel(dir+logConfig)
+	if(err!=nil){
+		fmt.Print(err)
+		logLevel.LogLevel=7
+		SetLogLevel(dir+logConfig)
+	}
 	//fmt.Println(fmt.Sprintf("%d",logLevel.LogLevel))
 	if logLevel.LogLevel&4==0{
 		return
@@ -80,7 +104,17 @@ func LogDebug(dir string,content interface{}){
 }
 
 func LogNotice(dir string,content interface{})  {
-	logLevel:=GetLogLevel(dir+logConfig)
+	errDir := os.MkdirAll(dir+"log/", 0777)
+	if errDir != nil {
+		fmt.Printf("%s", errDir)
+		fmt.Println(fmt.Sprintf("%s", debug.Stack()))
+	}
+	logLevel,err:=GetLogLevel(dir+logConfig)
+	if(err!=nil){
+		fmt.Print(err)
+		logLevel.LogLevel=7
+		SetLogLevel(dir+logConfig)
+	}
 	if logLevel.LogLevel&2==0{
 		return
 	}
@@ -88,7 +122,12 @@ func LogNotice(dir string,content interface{})  {
 }
 
 func LogWarnf(dir string,content interface{})  {
-	logLevel:=GetLogLevel(dir+logConfig)
+	logLevel,err:=GetLogLevel(dir+logConfig)
+	if(err!=nil){
+		fmt.Print(err)
+		logLevel.LogLevel=7
+		SetLogLevel(dir+logConfig)
+	}
 	if logLevel.LogLevel&1==0{
 		return
 	}

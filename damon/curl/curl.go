@@ -148,3 +148,38 @@ func QueryForm(dir string,reqParam log.Request) string{
 	}
 	return ""
 }
+
+func QueryFormSimple(dir string,url string) string{
+	headers := map[string]string{
+		"User-Agent":    "Sublime",
+		"Authorization": "Bearer access_token",
+		"Content-Type":  "Content-Type: application/x-www-form-urlencoded",
+	}
+	// 链式操作
+	req := goCurl.NewRequest()
+	var(
+		resp *goCurl.Response
+		err error
+	)
+	resp, err = req.
+	SetUrl(url).
+		SetHeaders(headers).
+		Get()
+
+
+	logFile.LogDebug(dir,"\n-------------------")
+	logFile.LogNotice(dir,req)
+	if err != nil {
+		logFile.LogWarnf(dir,err)
+		return ""
+	} else {
+		if resp.IsOk() {
+			logFile.LogNotice(dir,resp.Body)
+			return resp.Body
+		} else {
+			logFile.LogWarnf(dir,resp.Raw)
+			return ""
+		}
+	}
+	return ""
+}

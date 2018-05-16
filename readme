@@ -1,10 +1,26 @@
 数据目录
 /aladdin/user/IP/2018-05-14-11/case1
+
 raw.log   //业务日志文件
-logConfig.json  //{"log_level":7}
+globalConfig.json  //{"ip":"127.0.0.1","port":8080}
+configParams.json   //需要更新的业务参数字段
+configWatch.json  //需要热编译目录,配置
+
+logConfig.json  //本地日志{"log_level":7}
 log
    debug.log
    notice.log
    warn.log
-globalConfig.json  //{"ip":"127.0.0.1","port":8080}
-configParams.json   //需要更新的业务参数字段
+http  //http server 日志
+   log
+      debug.log
+      notice.log
+      warn.log
+   logConfig.json //日志级别配置
+watch   //热编译日志
+   log
+      debug.log
+      notice.log
+      warn.log
+   logConfig.json  //日志级别配置
+test //测试热编译目录
