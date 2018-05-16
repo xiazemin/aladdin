@@ -9,8 +9,7 @@ import (
 	"fmt"
 )
 
-func HandleReq(defaultDir string,globalConfig string,configParams string,lineEnd byte,defaultFile string) string {
-	ipPort:=config.GetIpPort(defaultDir,globalConfig)
+func HandleReq(defaultDir string,ipPort *config.IpPort,configParams string,lineEnd byte,defaultFile string) string {
 	logFile.LogDebug(defaultDir,*ipPort)
 	confParams:=config.LocadParams(defaultDir,configParams)
 	reqList:=log.Parse(defaultDir,defaultFile,lineEnd);

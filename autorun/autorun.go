@@ -5,8 +5,11 @@ import (
 	"github.com/xiazemin/aladdin/damon/logFile"
 	"github.com/xiazemin/aladdin/flag"
 	"github.com/xiazemin/aladdin/damon/curl"
+	"github.com/xiazemin/aladdin/damon/config"
+	"github.com/xiazemin/aladdin/http"
 	"fmt"
 )
+const globalConfig  ="globalConfig.json"
 
 type RemoteConf struct {
 	Ip string
@@ -36,8 +39,16 @@ func remoteRun(dirLog string) bool {
 	if(conf.Ip==""){
 		return false
 	}
-
-	url:="http://"+conf.Ip+fmt.Sprintf(":%d",conf.Port)+"/aladdin"
+	defaultDir:=flag.GetDefaultDir()
+	ipPort:=config.GetIpPort(defaultDir,globalConfig)
+	if flag.IsRemoteServer(defaultDir){
+		ip := http.GetLocalIp(defaultDir)
+		logFile.LogNotice(dirLog, fmt.Sprintf(" local ip %s", ip))
+		if ip!="" {
+		ipPort.Ip = ip
+		}
+	}
+	url:="http://"+conf.Ip+fmt.Sprintf(":%d",conf.Port)+"/aladdin?"+fmt.Sprintf("ip=%s&port=%d",ipPort.Ip,ipPort.Port)
 	resp:=curl.QueryFormSimple(dirLog,url)
 	logFile.LogNotice(dirLog,resp)
 	logFile.LogDebug(dirLog,resp)
