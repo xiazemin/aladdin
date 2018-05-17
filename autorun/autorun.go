@@ -48,7 +48,8 @@ func remoteRun(dirLog string) bool {
 		ipPort.Ip = ip
 		}
 	}
-	url:="http://"+conf.Ip+fmt.Sprintf(":%d",conf.Port)+"/aladdin?"+fmt.Sprintf("ip=%s&port=%d",ipPort.Ip,ipPort.Port)
+	userConf:=config.GetUserConf(defaultDir,globalConfig)
+	url:="http://"+conf.Ip+fmt.Sprintf(":%d",conf.Port)+"/aladdin?"+fmt.Sprintf("ip=%s&port=%d&user=%s&model=%s&date=%s",ipPort.Ip,ipPort.Port,userConf.User,userConf.Model,userConf.Date)
 	resp:=curl.QueryFormSimple(dirLog,url)
 	logFile.LogNotice(dirLog,resp)
 	logFile.LogDebug(dirLog,resp)

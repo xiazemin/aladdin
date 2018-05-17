@@ -7,6 +7,7 @@ import (
 
 	"github.com/howeyc/fsnotify"
 	"github.com/xiazemin/aladdin/damon/logFile"
+	"github.com/xiazemin/aladdin/damon/file"
 )
 
 const defaultTimeSpan  =1 //s
@@ -74,10 +75,16 @@ func NewWatcher(dir string,paths []string,dirExe string,name string) {
 	logFile.LogNotice(dir,"[INFO] Initializing watcher...\n")
 	for _, path := range paths {
 		logFile.LogNotice(dir,fmt.Sprintf("[TRAC] Directory( %s )\n", path))
-		err = watcher.Watch(path)
-		if err != nil {
-			logFile.LogWarnf(dir,fmt.Sprintf("[ERRO] Fail to watch directory[ %s ]\n", err))
-			os.Exit(2)
+		logFile.LogDebug(dir,fmt.Sprintf("[TRAC] Directory( %s )\n", path))
+		allDirs:=file.ListDirs(path,dir)
+                logFile.LogNotice(dir,allDirs)
+		logFile.LogDebug(dir,allDirs)
+		for _,subpath:=range (allDirs) {
+			err = watcher.Watch(subpath)
+			if err != nil {
+				logFile.LogWarnf(dir, fmt.Sprintf("[ERRO] Fail to watch directory[ %s ]\n", err))
+				os.Exit(2)
+			}
 		}
 	}
 

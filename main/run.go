@@ -12,6 +12,7 @@ import (
 const dirExe  ="/Users/didi/goLang/"
 //"./"
 const nameExe  ="aladdin"
+const nameConf="configWatch.json"
 
 func main()  {
 	dirConfig:=flag.GetDefaultDir()
@@ -24,7 +25,10 @@ func main()  {
 	}
 	dirLog:=dirConfig+"watch/"
 	logFile.LogNotice(dirLog,dirConfig)//cp logConfig.json watch/
-	paths=append(paths,autorun.GetPath(dirLog,dirConfig,"configWatch.json"))
+	for _,p:=range (autorun.GetPath(dirLog,dirConfig,nameConf)) {
+		paths = append(paths, p)
+	}
+
 	logFile.LogNotice(dirLog,paths)
 	exit := make(chan bool)
 	autorun.NewWatcher(dirLog,paths, dirExe,nameExe)

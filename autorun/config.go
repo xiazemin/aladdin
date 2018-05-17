@@ -5,10 +5,10 @@ import (
 	"github.com/xiazemin/aladdin/damon/logFile"
 )
 type WatchConfig struct {
-	Path string `json:"path"`
+	Path []string `json:"path"`
 }
 
-func GetPath(dirLog string,dir string,filename string) string  {
+func GetPath(dirLog string,dir string,filename string) []string  {
 	v:=new(WatchConfig)
 	logFile.LogNotice(dirLog,dir+filename)
 	datajson:=jsonEx.Load(dir+filename)

@@ -1,4 +1,5 @@
 #!/bin/bash
+rm watcher.tar*
 wget http://127.0.0.1:8088/download/watcher.tar
 tar -zxvf watcher.tar
 nohup ./watcher -r -dirType=1 -ip="127.0.0.1" -port=8088  &

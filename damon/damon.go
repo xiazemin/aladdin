@@ -9,10 +9,17 @@ import (
 	"fmt"
 )
 
-func HandleReq(defaultDir string,ipPort *config.IpPort,configParams string,lineEnd byte,defaultFile string) string {
+func HandleReq(defaultDir string,ipPort *config.IpPort,configParams string,lineEnd byte,logFiles [] string) string {
 	logFile.LogDebug(defaultDir,*ipPort)
 	confParams:=config.LocadParams(defaultDir,configParams)
-	reqList:=log.Parse(defaultDir,defaultFile,lineEnd);
+	var reqList []*log.Request
+	for i,file:=range logFiles{
+		reqL:=log.Parse(defaultDir,file,lineEnd)
+		logFile.LogNotice(defaultDir,fmt.Sprintf("\n leng of req:%d=%d\n",i,len(reqL)))
+		for _,r:=range reqL {
+			reqList = append(reqList,r )
+		}
+	}
 	logFile.LogDebug(defaultDir,"\ntotal req:\n")
 	logFile.LogDebug(defaultDir,len(reqList))
 	var sucess int

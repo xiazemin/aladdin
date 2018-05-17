@@ -5,7 +5,7 @@ GOOS=linux GOARCH=amd64 go build -o watcher  src/github.com/xiazemin/aladdin/mai
 #$ nohup ./watcher -r -dirType=1 -ip="127.0.0.1" -port=8088  &
 
 tar czvf watcher.tar configWatch.json  globalConfig.json logConfig.json watcher
-tar czvf aladdin.tar  configParams.json  globalConfig.json  logConfig.json raw.log aladdin
+tar czvf aladdin.tar  configParams.json  globalConfig.json  logConfig.json configData.json raw.log aladdin
 
 mkdir download
 mv aladdin.tar download/

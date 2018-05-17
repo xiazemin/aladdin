@@ -4,6 +4,9 @@ import (
 	"github.com/xiazemin/aladdin/damon/logFile"
 	"github.com/xiazemin/aladdin/damon/url"
 	"github.com/xiazemin/aladdin/damon/json"
+	"github.com/xiazemin/aladdin/damon/file"
+	"github.com/xiazemin/aladdin/damon/config"
+	"go/src/fmt"
 )
 /**
 log_format main '$remote_addr - $remote_user [$time_local]  '
@@ -11,7 +14,16 @@ log_format main '$remote_addr - $remote_user [$time_local]  '
         '"$http_referer" "$http_user_agent" $server_addr $upstream_addr $host $upstream_cache_status $HEADER "$request_body" $operationid';
  */
 const defaultDir  ="/Users/didi/aladdin/xiazemin/10.96.76.97/2018-05-14-11/case1/"
+const configData  = "configData.json"
+const globalConfig  ="globalConfig.json"
 func main()  {
+	userConf:=config.GetUserConf(defaultDir,globalConfig)
+	fmt.Print(userConf)
+	logFile.LogNotice(defaultDir,defaultDir)
+	list:=config.GetSelectedLogFiles(defaultDir,configData,userConf.User,userConf.Date,userConf.Model)
+
+	fmt.Print(list)
+
 	logFile.LogDebug(defaultDir,log.GetAlphaTab("ie=utf-8&f=8&rsv_bp=1&rsv_idx=1&tn=baidu&wd=%20invalid%20character%20%27%7B%27%20after%20top-level%20value&oq=golang%2520%25E8%25B0%2583%25E7%2594%25A8%25E6%25A0%2588&rsv_pq=cd93e94d00051db9&rsv_t=1c5eYwmNwWfA31oioXIREysIkHFRAwl1xCgZlt79euRIPpkelmnkBE9uv4k&rqlang=cn&rsv_enter=0&inputT=483&rsv_sug3=721&rsv_sug2=0&rsv_sug4=483"))
 
 	//[$time_local] "$request"
@@ -28,4 +40,10 @@ func main()  {
 
 	}
 	logFile.LogDebug(defaultDir,json.ToForm(defaultDir,url.ToJson("lid=4565&j_id=456756546&version=1.0.0")))
+
+	allDirs:=file.ListDirs(defaultDir,defaultDir)
+	logFile.LogDebug(defaultDir,allDirs)
+	fmt.Print(allDirs)
+
+
 }

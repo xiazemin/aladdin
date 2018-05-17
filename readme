@@ -2,10 +2,10 @@
 /aladdin/user/IP/2018-05-14-11/case1
 
 raw.log   //业务日志文件
-globalConfig.json  //{"ip":"127.0.0.1","port":8080}
-configParams.json   //需要更新的业务参数字段
-configWatch.json  //需要热编译目录,配置
-
+globalConfig.json  //{"ip":"127.0.0.1","port":8080,"user":"xiazemin","date":"2018051712","model":"model name"}
+configParams.json   //需要更新的业务参数字段{"key":"value"}
+configData.json // 测试日志说明:用户,创建日期+小时,模块,日志相对路径+名字,是否选用,描述{"des_list":[{"user":"xiazemin","date":"2018051712","model":"model name","log_name":"path/raw.log","selected":1,"description":"model test case1"}]}
+configWatch.json  //需要热编译目录,配置{"path":["/p1/","/p2/"]}
 logConfig.json  //本地日志{"log_level":7}
 log
    debug.log
