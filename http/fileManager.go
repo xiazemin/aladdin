@@ -48,6 +48,12 @@ func (this *Serv)FileRoute(w http.ResponseWriter, r *http.Request)  {
 			t.Execute(w, value)
 			return
 		}
+	case "urlJson":
+		urlJson:=new(api.UrlJson)
+		resp=urlJson.Handle(uris,w,r,this.DefaultDir,this.LogDir,tmplDir,this.ConfigData)
+		logFile.LogNotice(this.LogDir,resp)
+		fmt.Fprintln(w,resp)
+		return
 	default:
 		resp=r.RequestURI+fmt.Sprintf("   %d  %+v  %s ",len(uris),uris,uris[2])
 

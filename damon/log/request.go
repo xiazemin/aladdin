@@ -144,3 +144,17 @@ func (this * Request) ForMatRequest(dir string,req * Request,ipPort *config.IpPo
 	logFile.LogDebug(dir,req)
 	return req
 }
+
+func (this * Request)Url2Json(req * Request) * Request {
+	req.Arguments=url.ToJson(req.Param)
+	res:=strings.Split(req.Uri,"?")
+	if res[0]!=""{
+		req.Uri=res[0]
+	}
+	if len(res)>1&&res[1]!=""{
+		for k,v:=range (url.ToJson(res[1])){
+			req.Arguments[k]=v
+		}
+	}
+	return req
+}

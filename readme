@@ -25,3 +25,9 @@ watch   //热编译日志
       warn.log
    logConfig.json  //日志级别配置
 test //测试热编译目录
+
+http://127.0.0.1:8088/file/data/get/#   add  new  update
+http://127.0.0.1:8088/file/config/get/#  add  update
+http://127.0.0.1:8088/file/urlJson/url2json/#
+http://127.0.0.1:8088/file/urlJson/json2url/#
+http://127.0.0.1:8088/file/urlJson/parseurl/#
