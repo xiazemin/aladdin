@@ -25,7 +25,7 @@ func (this *Serv)IndexHandler(w http.ResponseWriter, r *http.Request) {
 func (this *Serv)getIpPort(r *http.Request) *config.IpPort {
 	ip:=string(r.Form.Get("ip"))
 	port,err:=strconv.Atoi(r.Form.Get("port"))
-	logFile.LogNotice(this.LogDir+"http/",fmt.Sprintf(" ip :%s ,port: %d ,from request",ip,port))
+	logFile.LogNotice(this.LogDir,fmt.Sprintf(" ip :%s ,port: %d ,from request",ip,port))
 	if err!=nil{
 		logFile.LogWarnf(this.LogDir,err)
 	}
@@ -42,13 +42,13 @@ func (this *Serv)getIpPort(r *http.Request) *config.IpPort {
 		logFile.LogWarnf(this.LogDir," port is 0 use 8080 instead ")
 	}
 
-	logFile.LogNotice(this.LogDir+"http/",fmt.Sprintf(" ip :%s ,port: %d ,from request",ipPort.Ip,ipPort.Port))
+	logFile.LogNotice(this.LogDir,fmt.Sprintf(" ip :%s ,port: %d ,from request",ipPort.Ip,ipPort.Port))
 	return ipPort
 }
 
 func (this *Serv)getLogFiles(r *http.Request) []string {
 	userConf:=config.GetUserConf(this.DefaultDir,this.GlobalConfig)
-	logFile.LogNotice(this.LogDir+"http/",userConf)
+	logFile.LogNotice(this.LogDir,userConf)
 	user:=string(r.Form.Get("user"))
 	date:=string(r.Form.Get("date"))
 	model:=string(r.Form.Get("model"))
@@ -61,15 +61,15 @@ func (this *Serv)getLogFiles(r *http.Request) []string {
 	if model!=""{
 		userConf.Model=model
 	}
-	logFile.LogNotice(this.LogDir+"http/",userConf)
+	logFile.LogNotice(this.LogDir,userConf)
 	logFiles:=config.GetSelectedLogFiles(this.DefaultDir,this.ConfigData,userConf.User,userConf.Date,userConf.Model)
-	logFile.LogNotice(this.LogDir+"http/",logFiles)
+	logFile.LogNotice(this.LogDir,logFiles)
 	return logFiles
 }
 
 func (this *Serv)AladdinHandler(w http.ResponseWriter, r *http.Request)  {
         //logFile.LogNotice(this.LogDir+"http/",r.Body)
-	logFile.LogNotice(this.LogDir+"http/",this.LogDir+"http/")
+	logFile.LogNotice(this.LogDir,this.LogDir)
 	r.ParseForm()
         ipPort:=this.getIpPort(r)
 	logFiles:=this.getLogFiles(r)
@@ -79,11 +79,11 @@ func (this *Serv)AladdinHandler(w http.ResponseWriter, r *http.Request)  {
 	ret:=damon.HandleReq(this.DefaultDir,ipPort,this.ConfigParams,this.LineEnd,this.LogFiles)
 	resp:="hello aladdin\n"+ret
 	fmt.Fprintln(w, resp)
-	logFile.LogNotice(this.LogDir+"http/",resp)
+	logFile.LogNotice(this.LogDir,resp)
 }
 
 func (this *Serv)Serve(dir string,globalConfig string,configParams string,lineEnd byte,defaultFile  string,configData string) {
-	this.LogDir=dir
+	this.LogDir=dir+"http/"
 	this.DefaultDir=dir
 	this.GlobalConfig=globalConfig
 	this.ConfigParams=configParams
@@ -92,6 +92,7 @@ func (this *Serv)Serve(dir string,globalConfig string,configParams string,lineEn
 	this.ConfigData=configData
 	http.HandleFunc("/", this.IndexHandler)
 	http.HandleFunc("/aladdin", this.AladdinHandler)
+	http.HandleFunc("/file/",this.FileRoute)
 	// 注意斜杠！
 	http.Handle("/download/", http.StripPrefix("/download/", http.FileServer(http.Dir(dir+"download/"))))
 	ip,port:=flag.GetIpPort(dir)

@@ -51,11 +51,16 @@ func GetDefaultDir()string  {
 			fmt.Println(err)
 		}
 	}
+	dirDef=AddSlash(dirDef)
+	fmt.Println(fmt.Sprintf("dir Type:%d",*dirType))
+	fmt.Println("work dir:"+dirDef)
+       return dirDef
+}
+
+func AddSlash(dirDef string)  string{
 	dirBytes:=[]byte(dirDef)
 	if last:=dirBytes[len(dirDef)-1];last!='/'{
 		dirDef=dirDef+"/"
 	}
-	fmt.Println(fmt.Sprintf("dir Type:%d",*dirType))
-	fmt.Println("work dir:"+dirDef)
-       return dirDef
+	return dirDef
 }

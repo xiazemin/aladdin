@@ -6,7 +6,7 @@ import (
 	"github.com/xiazemin/aladdin/flag"
 	"github.com/xiazemin/aladdin/damon/curl"
 	"github.com/xiazemin/aladdin/damon/config"
-	"github.com/xiazemin/aladdin/http"
+	"github.com/xiazemin/aladdin/damon/netenv"
 	"fmt"
 )
 const globalConfig  ="globalConfig.json"
@@ -42,7 +42,7 @@ func remoteRun(dirLog string) bool {
 	defaultDir:=flag.GetDefaultDir()
 	ipPort:=config.GetIpPort(defaultDir,globalConfig)
 	if flag.IsRemoteServer(defaultDir){
-		ip := http.GetLocalIp(defaultDir)
+		ip := netenv.GetLocalIp(defaultDir)
 		logFile.LogNotice(dirLog, fmt.Sprintf(" local ip %s", ip))
 		if ip!="" {
 		ipPort.Ip = ip

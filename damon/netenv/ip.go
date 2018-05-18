@@ -1,9 +1,15 @@
-package http
+package netenv
 import (
 	"net"
 	"github.com/xiazemin/aladdin/damon/logFile"
+	"github.com/xiazemin/aladdin/flag"
+	"go/src/fmt"
 )
 func GetLocalIp(dir string)string  {
+	fmt.Print(flag.IsRemoteServer(dir))
+	if !flag.IsRemoteServer(dir){
+		return "127.0.0.1"
+	}
 	var ip string
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {

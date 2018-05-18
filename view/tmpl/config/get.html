@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>user log file config </title>
+</head>
+<body>
+配置文件目录<br/>
+<span>
+    {{ .FileInfo }}
+    <hr/>
+</span>
+<!--span>
+    {{ . }}
+    <hr/>
+</span>
+<span>
+    {{range $row,$v := .FileContent}}
+    {{$row}}: {{$v.User}}   --- {{$v.LogName}}---{{$v.Selected}}
+    <br/>
+    {{end}}
+    <hr/>
+</span-->
+<span style="text-align:center;display:block;" > 配置详细信息</span>
+<table border="1" align="center">
+    <tr> <td>序号</td> <td>用户</td> <td>日期</td> <td>模块</td><td>日志文件</td><td>是否使用</td><td>描述</td></tr>
+    {{range $row,$v := .FileContent}}
+        <tr> <td>{{ $row }}</td><td>{{ $v.User }}</td> <td>{{ $v.Date }}</td> <td>{{ $v.Model }}</td><td>{{ $v.LogName }}</td><td><input type="checkbox" checked="{{ $v.Selected }}"> </input></td><td>{{ $v.Description }}</td> </tr>
+    {{ end }}
+</table>
+</body>
+</html>
