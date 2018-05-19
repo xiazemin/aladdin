@@ -42,7 +42,7 @@ func (this * Request) ParseUri(dir string,request string,sep string)*Request{
 		if(result[0]=="GET" || result[0]=="POST"){
 			this.Method=result[0]
 		}
-		r, _ := regexp.Compile("^(/[A-Za-z0-9]+)+(\\?[A-Za-z0-9_\\-]+=[A-Za-z0-9_%\\-.\\+]+)?(&[A-Za-z0-9_\\-]+=[A-Za-z0-9_%\\-.\\+]+)*$")
+		r, _ := regexp.Compile("^(/[A-Za-z0-9]+)+(\\?[A-Za-z0-9_\\-]+=[A-Za-z0-9_%\\-.\\+]+)?(&[A-Za-z0-9_\\-]+=[A-Za-z0-9_%/\\-.\\+]+)*$")
 		logFile.LogDebug(dir,GetAlphaTab(result[1]))
 		if r.MatchString(result[1]){
 			this.Uri=result[1]
@@ -70,6 +70,9 @@ func (this * Request) ParseTime(dir string,request string) int64  {
 	logFile.LogDebug(dir,"\ntime start:")
 	resultS:=strings.Split(request, timeSepE)
 	logFile.LogDebug(dir,resultS)
+	if(len(resultS)<2){
+		return 0
+	}
 	logFile.LogDebug(dir,resultS[1])
 	resultE:=strings.Split(resultS[0],timeSepS)
 	logFile.LogDebug(dir,"\n finish  time start end:")

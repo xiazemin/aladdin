@@ -7,6 +7,8 @@ import (
 	"github.com/xiazemin/aladdin/damon"
 	"github.com/xiazemin/aladdin/damon/config"
 	"strconv"
+	"strings"
+	"os"
 )
 
 type Serv struct {
@@ -19,7 +21,24 @@ type Serv struct {
 	ConfigData string
 }
 func (this *Serv)IndexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "hello world")
+	//静态资源文件加载
+	logFile.LogNotice(this.LogDir, r.URL.Path)
+	if strings.HasPrefix(r.URL.Path,"/view"){
+		tmplDir:=flag.GetTmplDir()
+		logFile.LogNotice(this.LogDir, tmplDir)
+		file := strings.Replace(tmplDir,"tmpl/","",1)+ strings.Replace(r.URL.Path,"/view/","",1)
+		logFile.LogNotice(this.LogDir, file)
+		f,err := os.Open(file)
+		defer f.Close()
+
+		if err != nil && os.IsNotExist(err){
+			file = this.DefaultDir +this.GlobalConfig
+		}
+		http.ServeFile(w,r,file)
+		return
+	}else {
+		fmt.Fprintln(w, "hello world")
+	}
 }
 
 func (this *Serv)getIpPort(r *http.Request) *config.IpPort {
@@ -95,6 +114,7 @@ func (this *Serv)Serve(dir string,globalConfig string,configParams string,lineEn
 	http.HandleFunc("/file/",this.FileRoute)
 	// 注意斜杠！
 	http.Handle("/download/", http.StripPrefix("/download/", http.FileServer(http.Dir(dir+"download/"))))
+
 	ip,port:=flag.GetIpPort(dir)
 	if(ip==""){
 		err:=http.ListenAndServe("127.0.0.1:8088", nil)

@@ -8,22 +8,40 @@ import (
 	"encoding/json"
 	"github.com/xiazemin/aladdin/damon/url"
 	jsonEx "github.com/xiazemin/aladdin/damon/json"
+	"io/ioutil"
+	"text/template"
+	"github.com/xiazemin/aladdin/damon/netenv"
 )
 type UrlJson struct {
 
 }
 
 func (this *UrlJson)Handle(uris []string,w http.ResponseWriter,r *http.Request,defaultDir string,logDir string,viewDir string,configData string) string{
-	content:=string(r.PostFormValue("file_content"))
+	r.ParseForm()
+	logFile.LogNotice(logDir,r.Form)
+	content:=string(r.Form.Get("content"))
+	logFile.LogNotice(logDir,content)
 	var resp string
 	switch uris[3] {
 	case "url2json":
 		resp=this.Url2Json(content,logDir)
+		logFile.LogNotice(logDir,"\033[32minput\033[0m:"+content+",\033[31murl2json\033[0m:"+resp)
+		fmt.Fprintln(w,resp)
 	case "json2url":
 		resp=this.Json2Url(content,logDir)
+		logFile.LogNotice(logDir,"\033[32minput\033[0m:"+content+",\033[31mjson2url\033[0m:"+resp)
+		fmt.Fprintln(w,resp)
 	case "parseurl":
              resp=this.ParseUrl(content,logDir)
+		logFile.LogNotice(logDir,"\033[32minput\033[0m:"+content+",\033[31mparseurl\033[0m:"+resp)
+		fmt.Fprintln(w,resp)
 	default:
+		templ, _ := ioutil.ReadFile(viewDir+"urljson/"+"urljson.html")
+		t := template.New("parse log file ")
+		t.Parse(string(templ))
+		ip:=netenv.GetLocalIp(logDir)
+		url:="http://"+ip+":8088"
+		t.Execute(w, url)
 		resp=r.RequestURI+fmt.Sprintf("   %d  %+v  %s  %s %s",len(uris),uris,uris[2],uris[3],content)
 	}
 return resp

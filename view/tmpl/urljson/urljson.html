@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="{{ . }}/view/js/jquery-3.3.1.js"></script>
+    <script type="text/javascript">
+
+        function isJSON(str) {
+            if (typeof str == 'string') {
+                try {
+                    var obj=JSON.parse(str);
+                    if(typeof obj == 'object' && obj ){
+                        return true;
+                    }else{
+                        return false;
+                    }
+
+                } catch(e) {
+                    console.log('error：'+str+'!!!'+e);
+                    return false;
+                }
+            }
+            console.log('It is not a string!')
+        }
+
+       function SendAjax(uri,contentId,type) {
+           //alert("{{ . }}" + uri)
+           //alert(contentId)
+           //alert($("#"+contentId).val())
+           $.ajax({
+                   type: "GET",
+                   url: "{{ . }}" + uri,
+                   data: {content: $("#"+contentId).val()},
+                   dataType: type,
+                   success: function (data) {
+                       if (typeof data == 'object' && data) {
+                           alert(JSON.stringify(data));
+                           $('#result').empty();   //清空resText里面的所有内容
+                           $('#result').val(JSON.stringify(data));
+                           var html = '';
+                           $.each(data, function (key, value) {
+                               html += '<div class="comment"><h6>' + key
+                                       + ':</h6><p class="para">' + value
+                                       + '</p></div><br/>';
+                           });
+                           $('#resText').html(html);
+                       }else{
+                           alert(data);
+                           $('#result').empty();   //清空resText里面的所有内容
+                           $('#result').val(data);
+                           $('#resText').html(data);
+                       }
+                   }
+               });
+       }
+    </script>
+</head>
+<body>
+原始日志:
+<textarea data-width="100%" id="raw_log"></textarea>
+<input type="button" value="解析url" align="right" id="send" onclick="SendAjax('/file/urlJson/parseurl/','raw_log','text')">
+<hr/>
+url:
+<textarea data-width="100%"  id="url_data"></textarea>
+<input type="button" value="转换为json" align="right" onclick="SendAjax('/file/urlJson/url2json/','url_data','json')">
+<hr/>
+json:
+<textarea data-width="100%"  id="json_data"></textarea>
+<input type="button" value="转换为url" align="right" onclick="SendAjax('/file/urlJson/json2url/','json_data','text')">
+<hr/>
+结果
+<textarea data-width="100%" id="result"></textarea>
+<input type="button" value="保存" align="right">
+<hr/>
+{{ . }}
+<hr/>
+<span id="resText"></span>
+</body>
+</html>
