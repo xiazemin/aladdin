@@ -1,6 +1,8 @@
 数据目录
 /aladdin/user/IP/2018-05-14-11/case1
 
+view //静态文件目录
+
 data/xiazemin/raw.log   //业务日志文件,跟config/Data.json的 log_name对应
 
 globalConfig.json  //{"ip":"127.0.0.1","port":8080,"user":"xiazemin","date":"2018051712","model":"model name"}
@@ -31,3 +33,6 @@ http://127.0.0.1:8088/file/config/get/#  add  update
 http://127.0.0.1:8088/file/urlJson/url2json/#
 http://127.0.0.1:8088/file/urlJson/json2url/#
 http://127.0.0.1:8088/file/urlJson/parseurl/#
+
+http://127.0.0.1:8088/file/urlJson/  工具集合
+http://127.0.0.1:8088/view/ diff 工具

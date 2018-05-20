@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 var tmplType=flag.Int("tmplType",2,"usage:-tmplType=1,2,,...(pwd,userdefined,dev,~)")
-const tmplDefault  ="/Users/didi/goLang/src/github.com/xiazemin/aladdin/view/"
+const tmplDefault  ="/Users/didi/goLang/src/github.com/xiazemin/aladdin/"
 func GetTmplDir() string {
 	flag.Parse()
 	var dir string
@@ -19,5 +19,5 @@ func GetTmplDir() string {
 	fmt.Println(dir)
 	fmt.Println(*tmplType)
 	dir=AddSlash(dir)
-	return dir+"tmpl/"
+	return dir+"view/tmpl/"
 }
