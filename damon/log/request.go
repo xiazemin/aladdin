@@ -37,12 +37,13 @@ func GetAlphaTab(line string) map[string] int  {
 }
 
 func (this * Request) ParseUri(dir string,request string,sep string)*Request{
-	result:=strings.Split(request, sep);
+	result:=strings.Split(request, sep)
+	logFile.LogDebug(dir,result)
 	if len(result)==length {
 		if(result[0]=="GET" || result[0]=="POST"){
 			this.Method=result[0]
 		}
-		r, _ := regexp.Compile("^(/[A-Za-z0-9]+)+(\\?[A-Za-z0-9_\\-]+=[A-Za-z0-9_%\\-.\\+]+)?(&[A-Za-z0-9_\\-]+=[A-Za-z0-9_%/\\-.\\+]+)*$")
+		r, _ := regexp.Compile("^(/[A-Za-z0-9]+)+(\\?[A-Za-z0-9_\\-]+=[A-Za-z0-9_%\\-.\\+]+)?(&[A-Za-z0-9_\\-]+=[A-Za-z0-9_%/\\-\\.\\?&=:\\+]+)*$")
 		logFile.LogDebug(dir,GetAlphaTab(result[1]))
 		if r.MatchString(result[1]){
 			this.Uri=result[1]
@@ -59,7 +60,7 @@ func (this * Request)  ParseParam(dir string,request string,sep string) string {
 	logFile.LogDebug(dir,"param result:")
 	logFile.LogDebug(dir,result)
 	if len(result)==paramLength {
-		r, _ := regexp.Compile("^([A-Za-z0-9_\\-]+=[A-Za-z0-9_%\\-.\\+]+)?(&[A-Za-z0-9_\\-]+=[A-Za-z0-9_%\\-.\\+]+)*$")
+		r, _ := regexp.Compile("^([A-Za-z0-9_\\-]+=[A-Za-z0-9_%\\-.\\+]+)?(&[A-Za-z0-9_\\-]+=[A-Za-z0-9_%\\-\\.\\?&=:\\+]+)*$")
 		if r.MatchString(result[0]){
 			return result[0]
 		}

@@ -1,0 +1,133 @@
+</<!DOCTYPE html>
+<html>
+<head>
+	<meta></meta>
+	<script type="text/javascript" src="./js/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="./js/codemirror.min.js"></script>
+	<script type="text/javascript" src="./js/mergely.min.js"></script>
+	<script type="text/javascript" src="./js/highlight.pack.js"></script>
+	<link type="text/css" rel="stylesheet" href="./style/codemirror.css" />
+	<link type="text/css" rel="stylesheet" href="./style/mergely.css" />
+	<link type="text/css" rel="stylesheet" href="./style/default.css">
+	
+	<title>color merge demo</title>
+
+	<script type="text/javascript">
+
+        $(document).ready(function () {
+			$('#compare').mergely({
+				cmsettings: { readOnly: false },
+				lhs: function(setValue) {
+					setValue('class A\n  def method_name(a,b)\n    "123".to_i + 3\n    str="123"\n  end\nend');
+				},
+				rhs: function(setValue) {
+					setValue('class B\n  def method_name(a,b,c)\n    "1234".to_i + 3\n    str="1234"\n  end\nend');
+				}
+			});
+		});
+
+		function get_befor_text(line, pos){
+			var i = line.indexOf("<span",pos);
+			if(i>=0){
+				return line.substr(pos,i-pos);
+			} else {
+				return line.substr(pos);
+			}
+		}
+
+		function get_span(line, pos){
+			var i = line.indexOf("<span",pos);
+			var j = line.indexOf(">",i+1);
+			if(i>=0){
+				return line.substr(i,j-i+1);
+			} else {
+				return "";
+			}
+		}
+
+		function get_text(line, pos){
+			var i = line.indexOf(">",pos);
+			var j = line.indexOf("</span>",i);
+			if(i>=0){
+				return line.substr(i+1,j-i-1);
+			} else {
+				return "";
+			}
+		}
+
+		function get_color_diff(line, render_line, render_hl_line){
+			render_line = render_line.substr(6,render_line.length-13);
+			var start_pos = 0;
+			var render_hl_line_pos = 0;
+			var output_line = "<span>"
+			while(start_pos < render_line.length){
+				var befor_txt = get_befor_text(render_line,start_pos);
+				var span = get_span(render_line,start_pos);
+				var text = get_text(render_line,start_pos);
+				start_pos=start_pos+befor_txt.length+span.length+text.length+7;
+				var line_pos = 0;
+				var word_pos = 0;
+				while(line_pos < befor_txt.length){
+					while(render_hl_line.substr(render_hl_line_pos,1)=='<'){
+						var end_pos = render_hl_line.indexOf('>',render_hl_line_pos)
+						output_line = output_line + render_hl_line.substr(render_hl_line_pos,end_pos-render_hl_line_pos+1);
+						render_hl_line_pos = end_pos + 1;
+					}
+					while(befor_txt.substr(line_pos,1)==render_hl_line.substr(render_hl_line_pos,1) && line_pos <befor_txt.length){
+						output_line = output_line + befor_txt.substr(line_pos,1);
+						line_pos = line_pos + 1;
+						render_hl_line_pos = render_hl_line_pos + 1;
+					}
+				}
+				while(word_pos < text.length){
+					while(render_hl_line.substr(render_hl_line_pos,1)=='<'){
+						var end_pos = render_hl_line.indexOf('>',render_hl_line_pos)
+						output_line = output_line + render_hl_line.substr(render_hl_line_pos,end_pos-render_hl_line_pos+1);
+						render_hl_line_pos = end_pos + 1;
+					}
+					output_line = output_line + span;
+					while(text.substr(word_pos,1)==render_hl_line.substr(render_hl_line_pos,1) && word_pos < text.length){
+						output_line = output_line + text.substr(word_pos,1);
+						word_pos = word_pos + 1;
+						render_hl_line_pos = render_hl_line_pos + 1;
+					}
+					output_line = output_line + "</span>";
+				}
+			}
+			output_line=output_line+"</span>"
+			return output_line;
+		}
+
+		function set_render_html(text_code,render_code,hl_code){
+			var code_lines = text_code.split("\n");
+			for (var i =  0; i < render_code.length; i++) {
+				render_code[i].innerHTML=get_color_diff(code_lines[i],render_code[i].innerHTML,hl_code[i]);
+			};
+		}
+
+		function render(){
+			var language = $('#language')[0].value;
+			var pre_lines = $(".CodeMirror-code pre");
+			var left_text_code = $('#compare').mergely('get','lhs');
+			var right_text_code = $('#compare').mergely('get','rhs');
+			var left_hl_code = hljs.highlight(language,left_text_code).value.split("\n");
+			var right_hl_code = hljs.highlight(language,right_text_code).value.split("\n");
+			var left_render_code = $("#compare-editor-lhs pre");
+			var right_render_code = $("#compare-editor-rhs pre");
+			set_render_html(left_text_code,left_render_code,left_hl_code)
+			set_render_html(right_text_code,right_render_code,right_hl_code)
+		}
+	</script>
+
+</head>
+<body>
+	set langure: 
+	<input type="text" name="language" id="language" value="">
+	<input type="button" name="render" value="render" onclick="javascript: render();">
+
+	<div id="mergely-resizer">
+		<div id="compare">
+		</div>
+	</div>
+</body>
+</html>

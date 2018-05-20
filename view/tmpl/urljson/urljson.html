@@ -24,7 +24,7 @@
             console.log('It is not a string!')
         }
 
-       function SendAjax(uri,contentId,type) {
+       function SendAjax(uri,contentId,type,resultId) {
            //alert("{{ . }}" + uri)
            //alert(contentId)
            //alert($("#"+contentId).val())
@@ -35,20 +35,30 @@
                    dataType: type,
                    success: function (data) {
                        if (typeof data == 'object' && data) {
-                           alert(JSON.stringify(data));
-                           $('#result').empty();   //清空resText里面的所有内容
-                           $('#result').val(JSON.stringify(data));
+                           //alert(JSON.stringify(data));
+                           $('#'+resultId).empty();   //清空resText里面的所有内容
+                           $('#'+resultId).val(JSON.stringify(data));
                            var html = '';
                            $.each(data, function (key, value) {
-                               html += '<div class="comment"><h6>' + key
-                                       + ':</h6><p class="para">' + value
-                                       + '</p></div><br/>';
+                               if(typeof value == 'object' && value){
+                                   html += '<div class="comment"><h6>' + key
+                                           + ':</h6><p class="para">';
+                                  $.each(value,function (k,v) {
+                                      html +='<ul><li>'+k+'=>'+v+'</li><br/>';
+                                  });
+                                   html += '</ul>'
+                                   + '</p></div><br/>';
+                               }else {
+                                   html += '<div class="comment"><h6>' + key
+                                           + ':</h6><p class="para">' + value
+                                           + '</p></div><br/>';
+                               }
                            });
                            $('#resText').html(html);
                        }else{
-                           alert(data);
-                           $('#result').empty();   //清空resText里面的所有内容
-                           $('#result').val(data);
+                           //alert(data);
+                           $('#'+resultId).empty();   //清空resText里面的所有内容
+                           $('#'+resultId).val(data);
                            $('#resText').html(data);
                        }
                    }
@@ -57,21 +67,61 @@
     </script>
 </head>
 <body>
-原始日志:
-<textarea data-width="100%" id="raw_log"></textarea>
-<input type="button" value="解析url" align="right" id="send" onclick="SendAjax('/file/urlJson/parseurl/','raw_log','text')">
+<div style="height:20px; width:100%; overflow: auto;">
+    <div style="float: left;width: 48%;"style=" height:200px; width:48%; overflow: auto; word-break: break-all;float: left;">
+        原始日志:<input type="button" value="解析url" align="right" id="send" onclick="SendAjax('/file/urlJson/parseurl/','raw_log','text','result')">
+        </div>
+    <div style="float: left;width: 48%;"style=" height:200px; width:48%; overflow: auto; word-break: break-all;float: right;">
+        结果:<input type="button" value="保存" align="right">
+    </div>
+    </div>
+
+<div style="height:210px; width:100%; overflow: auto; disply:inline-block;">
+<textarea data-width="100%" id="raw_log" style=" height:200px; width:48%; overflow: auto; word-break: break-all;float: left;"></textarea>
+    <textarea data-width="100%" id="result"  style=" height:200px; width:48%; overflow: auto; word-break: break-all;float: right;" ></textarea>
+</div>
 <hr/>
-url:
-<textarea data-width="100%"  id="url_data"></textarea>
-<input type="button" value="转换为json" align="right" onclick="SendAjax('/file/urlJson/url2json/','url_data','json')">
+
+<div style="height:20px; width:100%; overflow: auto;">
+    <div style="float: left;width: 48%;">
+        url:<input type="button"  style=" disply:inline-block;float: right;" value="转换为json" align="right" onclick="SendAjax('/file/urlJson/url2json/','url_data','json','json_data')">
+    </div>
+    <div style="float: right;width: 48%;">
+        json:<input type="button"  style=" disply:inline-block;float: right;" value="转换为url" align="right" onclick="SendAjax('/file/urlJson/json2url/','json_data','text','url_data')">
+    </div>
+</div>
+<div style="height:210px; width:100%; overflow: auto; disply:inline-block;">
+   <textarea data-width="100%"  id="url_data"  style=" disply:inline-block;height:200px; width:48%; overflow: auto; word-break: break-all;float: left;"></textarea>
+  <textarea data-width="100%"  id="json_data"  style=" disply:inline-block;height:200px; width:48%; overflow: auto; word-break: break-all;float: right;"></textarea>
+</div>
 <hr/>
-json:
-<textarea data-width="100%"  id="json_data"></textarea>
-<input type="button" value="转换为url" align="right" onclick="SendAjax('/file/urlJson/json2url/','json_data','text')">
+
+<div style="height:20px; width:100%; overflow: auto;">
+<div style="float: left;width: 48%;">
+    待编码url:<input type="button"  style=" disply:inline-block;float: right;"value="编码" align="right" onclick="SendAjax('/file/urlJson/urlEncode/','url_encode','text','url_decode')">
+</div>
+    <div style="float: right;width: 48%;">
+        待解码url:<input type="button"  style=" disply:inline-block;float: right;" value="解码" align="right" onclick="SendAjax('/file/urlJson/urlDecode/','url_decode','text','url_encode')">
+    </div>
+</div>
+<div style="height:210px; width:100%; overflow: auto; disply:inline-block;">
+<textarea data-width="100%"  id="url_encode"  style=" height:200px; width:48%; overflow: auto; word-break: break-all;float: left;"></textarea>
+        <textarea data-width="100%"  id="url_decode"  style=" height:200px; width:48%; overflow: auto; word-break: break-all;float: right;"></textarea>
+</div>
 <hr/>
-结果
-<textarea data-width="100%" id="result"></textarea>
-<input type="button" value="保存" align="right">
+
+<div style="height:20px; width:100%; overflow: auto;">
+    <div style="float: left;width: 48%;"style=" height:200px; width:48%; overflow: auto; word-break: break-all;float: left;">
+        原始json:<input type="button" value="格式化" align="right" id="pretty" onclick="SendAjax('/file/urlJson/jsonPretty/','raw_json','text','pretty_json')">
+    </div>
+    <div style="float: left;width: 48%;"style=" height:200px; width:48%; overflow: auto; word-break: break-all;float: right;">
+        结果:<input type="button" value="保存" align="right">
+    </div>
+</div>
+<div style="height:210px; width:100%; overflow: auto; disply:inline-block;">
+    <textarea data-width="100%" id="raw_json" style=" height:200px; width:48%; overflow: auto; word-break: break-all;float: left;"></textarea>
+    <textarea data-width="100%" id="pretty_json"  style=" height:200px; width:48%; overflow: auto; word-break: break-all;float: right;" ></textarea>
+</div>
 <hr/>
 {{ . }}
 <hr/>

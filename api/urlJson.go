@@ -4,13 +4,15 @@ import (
 	"net/http"
 	"fmt"
 	"github.com/xiazemin/aladdin/damon/logFile"
-	"github.com/xiazemin/aladdin/damon/log"
 	"encoding/json"
 	"github.com/xiazemin/aladdin/damon/url"
 	jsonEx "github.com/xiazemin/aladdin/damon/json"
 	"io/ioutil"
 	"text/template"
 	"github.com/xiazemin/aladdin/damon/netenv"
+	"github.com/xiazemin/aladdin/damon/log"
+	"regexp"
+	"strings"
 )
 type UrlJson struct {
 
@@ -35,6 +37,18 @@ func (this *UrlJson)Handle(uris []string,w http.ResponseWriter,r *http.Request,d
              resp=this.ParseUrl(content,logDir)
 		logFile.LogNotice(logDir,"\033[32minput\033[0m:"+content+",\033[31mparseurl\033[0m:"+resp)
 		fmt.Fprintln(w,resp)
+	case "urlEncode":
+		resp=UrlEncode(content)
+		logFile.LogNotice(logDir,"\033[32minput\033[0m:"+content+",\033[31murlEncode\033[0m:"+resp)
+		fmt.Fprintln(w,resp)
+	case "urlDecode":
+		resp=UrlDecode(content)
+		logFile.LogNotice(logDir,"\033[32minput\033[0m:"+content+",\033[31murlDecode\033[0m:"+resp)
+		fmt.Fprintln(w,resp)
+	case "jsonPretty":
+		resp=JsonPretty(content,logDir)
+		logFile.LogNotice(logDir,"\033[32minput\033[0m:"+content+",\033[31mjsonPretty\033[0m:"+resp)
+		fmt.Fprintln(w,resp)
 	default:
 		templ, _ := ioutil.ReadFile(viewDir+"urljson/"+"urljson.html")
 		t := template.New("parse log file ")
@@ -48,7 +62,10 @@ return resp
 }
 
 func (this *UrlJson)Url2Json(u string,logDir string)string{
-	 m:=url.ToJson(u)
+	logFile.LogNotice(logDir,u)
+	logFile.LogDebug(logDir,strings.Contains(u,"\u0026"))
+	logFile.LogDebug(logDir,strings.Contains(u,"\\u0026"))
+	  m:=url.ToJson(u)
 	j,err:=json.Marshal(m)
 	if err!=nil{
 		logFile.LogWarnf(logDir,err)
@@ -71,22 +88,63 @@ type Url struct {
 	Id int `json:"id"`
 	Url string `json:"url"`
 	Arguments interface{} `json:"arguments"`
-} 
+}
+
+const lienEnd  ="\n"
+const sepu="\\u0026"
+const sep  ="&"
 func (this*UrlJson)ParseUrl(raw string,logDir string) string{
        var urls [] Url
-	reqList:=log.ParseContent(raw,"\n",logDir)
-	logFile.LogNotice(logDir,fmt.Sprintf("\n leng of req:%d=>%+v\n",len(reqList),reqList))
-	for i,req:=range reqList{
-		req=req.Url2Json(req)
-		var u Url
-		u.Id=i
-		u.Url=req.Uri
-		u.Arguments=req.Arguments
-		urls=append(urls,u)
+	lines:= strings.Split(raw,lienEnd) //以'\n'为结束符读入一行
+	logFile.LogDebug(logDir,lines)
+	for i,line:=range lines{
+            if line==""{
+		    continue
+	    }
+		var url Url
+		url.Id = i
+		if strings.Contains(line,sepu){
+			line=strings.Replace(line,sepu,sep,-1)
+		}
+		urlStr:=this.MatchUrl(line,logDir)
+		if urlStr==""{
+			r:=new(log.Request)
+			r=r.ParseLine(logDir,line)
+			r=r.Url2Json(r)
+			url.Url=r.Url
+			url.Arguments=jsonEx.ToForm(logDir,r.Arguments)
+		}else {
+			res := strings.Split(urlStr, "?")
+			r, _ := regexp.Compile("^http[s]://[A-Za-z0-9]+\\.[A-Za-z0-9]+[/A-Za-z0-9\\.]*$")
+			if r.Match([]byte(res[0])) {
+				url.Url = res[0]
+				url.Arguments = strings.Replace(urlStr, res[0] + "?", "", 1)
+			} else {
+				url.Arguments = urlStr
+			}
+		}
+		urls=append(urls,url)
 	}
 	r,err:=json.Marshal(urls)
 	if err!=nil{
 		logFile.LogWarnf(logDir,err)
 	}
 	return string(r)
+}
+
+func (this*UrlJson)MatchUrl(raw string,logDir string) string {
+	rexs:=[]string{"^http[s]://[A-Za-z0-9]+\\.[A-Za-z0-9]+[/=\\?%\\-&_~`@\\[\\]\\':+!]*([^<>\"\"])*$",
+		"^/[A-Za-z0-9]+\\.[A-Za-z0-9]+[/=\\?%\\-&_~`@\\[\\]\\':+!]*([^<>\"\"])*$",
+		"^%\\-&_~`@\\[\\]\\':+!]*([^<>\"\"])*$",
+		"^([A-Za-z0-9_\\-]+=[A-Za-z0-9_%\\-.\\+]+)?(&[A-Za-z0-9_\\-\\]+=[A-Za-z0-9_%\\-\\.\\?&=:\\+]+)*$"}
+	for _,rex:=range rexs {
+		r, _ := regexp.Compile(rex)
+		logFile.LogNotice(logDir, raw)
+		logFile.LogDebug(logDir, r)
+		if (r.MatchString(raw)) {
+			logFile.LogNotice(logDir,rex)
+			return raw
+		}
+	}
+      return  ""
 }
