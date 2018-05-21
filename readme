@@ -34,5 +34,7 @@ http://127.0.0.1:8088/file/urlJson/url2json/#
 http://127.0.0.1:8088/file/urlJson/json2url/#
 http://127.0.0.1:8088/file/urlJson/parseurl/#
 
+http://127.0.0.1:8088/file/data/edit# 更新  config/params.json
+
 http://127.0.0.1:8088/file/urlJson/  工具集合
 http://127.0.0.1:8088/view/ diff 工具

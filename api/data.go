@@ -19,7 +19,7 @@ import (
 type Data struct {
 
 }
-func (this*Data)Handle(uris []string,w http.ResponseWriter,r *http.Request,defaultDir string,logDir string,viewDir string,configData string)string  {
+func (this*Data)Handle(uris []string,w http.ResponseWriter,r *http.Request,defaultDir string,logDir string,viewDir string,configData string,configParams string)string  {
 	var resp string
 	switch uris[3] {
 	case "get":
@@ -30,10 +30,14 @@ func (this*Data)Handle(uris []string,w http.ResponseWriter,r *http.Request,defau
 		resp=this.Add(w,r,defaultDir,logDir,viewDir,configData)
 	case "new":
 		resp=this.New(w,r,defaultDir,logDir,viewDir,configData)
+	case "edit":
+		resp=this.Edit(w,r,defaultDir,logDir,viewDir,configParams)
+
 	default:
 		resp=r.RequestURI+fmt.Sprintf("   %d  %+v  %s  %s",len(uris),uris,uris[2],uris[3])
-
 	}
+	logFile.LogNotice(logDir,resp)
+	logFile.LogDebug(logDir,resp)
 	return  resp
 }
 

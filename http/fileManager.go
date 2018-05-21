@@ -32,7 +32,7 @@ func (this *Serv)FileRoute(w http.ResponseWriter, r *http.Request)  {
 			resp=r.RequestURI+fmt.Sprintf("   %d  %+v  %s ",len(uris),uris,uris[2])
 		}else{
 			data:=new(api.Data)
-			resp=data.Handle(uris,w,r,this.DefaultDir,this.LogDir,tmplDir,this.ConfigData)
+			resp=data.Handle(uris,w,r,this.DefaultDir,this.LogDir,tmplDir,this.ConfigData,this.ConfigParams)
 			logFile.LogNotice(this.LogDir,resp)
 			return
 		}

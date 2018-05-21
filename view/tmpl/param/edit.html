@@ -1,0 +1,22 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+<div>{{ .DirInfo }}</div>
+<hr/>
+<form action="#" method="post" enctype="multipart/form-data">
+<div>{{range $k,$v:= .ParamInfo }}
+	<span >{{ $k }}:</span>
+	<input type="text" id="{{ $k }}" name="{{ $k }}" value="{{ $v }}" align="right"><br/>
+	{{ end }}
+</div>
+	<input type="submit" value="更新" name="submit">
+</form>
+<hr/>
+{{ . }}
+</body>
+</html>

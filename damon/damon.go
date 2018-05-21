@@ -36,7 +36,7 @@ func HandleReq(defaultDir string,ipPort *config.IpPort,configParams string,lineE
 			logFile.LogNotice(defaultDir,req.Uri)
 		}
 		logFile.LogDebug(defaultDir,res)
-		config.UpdateParams(defaultDir, configParams, *res)
+		config.UpdateParams(defaultDir, configParams, res.Result)
 	}
 	logFile.LogNotice(defaultDir,"\n total:"+fmt.Sprintf("%d",len(reqList))+",sucess:"+fmt.Sprintf("%d",sucess))
 	return "\n total:"+fmt.Sprintf("%d",len(reqList))+",sucess:"+fmt.Sprintf("%d",sucess)

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	jsonEx "github.com/xiazemin/aladdin/damon/json"
 	"github.com/xiazemin/aladdin/damon/logFile"
-	"github.com/xiazemin/aladdin/damon/response"
 	"github.com/xiazemin/aladdin/damon/file"
 	"reflect"
 )
@@ -25,18 +24,18 @@ func LocadParams(dir string,fileName string) *Params{
 	return p
 }
 
-func UpdateParams(dir string,fileName string,result response.Response){
+func UpdateParams(dir string,fileName string,param map[string]interface{}){
 	datajson:=map[string] interface{}(LocadParams(dir,fileName).Params)
 	logFile.LogNotice(dir,datajson)
 	for k,_:=range (datajson){
-		for kn,vn:=range(result.Result){
+		for kn,vn:=range(param){
 			if k==kn && !isEmpty(kn) {
 				datajson[k]=vn
 				logFile.LogNotice(dir,k)
 			}
 		}
 	}
-	logFile.LogNotice(dir,result)
+	logFile.LogNotice(dir,param)
 	logFile.LogNotice(dir,datajson)
 	res,err:=json.Marshal(datajson)
 	if err!=nil{

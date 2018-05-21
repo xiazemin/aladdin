@@ -55,7 +55,11 @@ func (this *Config)Get(r *http.Request,defaultDir string,logDir string,viewDir s
 }
 
 func (this *Config)Update(r *http.Request,defaultDir string,logDir string,viewDir string,configData string)(name string,templ string,value interface{}){
-	return defaultDir,viewDir,configData
+	bytes, _ := ioutil.ReadFile(viewDir+"config/"+"get.html")
+	fmt.Println(viewDir+"config/"+"get.html")
+	logFile.LogNotice(logDir,string(viewDir+"config/"+"update.html"))
+	logFile.LogNotice(logDir,string(bytes))
+	return "update param  config",string(bytes),configData
 }
 
 func (this *Config)Add(r *http.Request,defaultDir string,logDir string,viewDir string,configData string)(name string,templ string,value interface{}){
