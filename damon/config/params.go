@@ -14,13 +14,17 @@ type Params struct {
 
 func LocadParams(dir string,fileName string) *Params{
 	datajson:=jsonEx.Load(dir+fileName)
-	data:=[]byte("{\"name\":\""+fileName+"\",\"params\":"+string(datajson)+"}")
-	logFile.LogDebug(dir,"{\"name\":\""+fileName+"\",\"params\":"+string(datajson)+"}")
+
 	p:=new(Params)
-	err:=json.Unmarshal(data,p)
+	p.Name=fileName
+	var v  map[string] interface{}
+	err:=json.Unmarshal(datajson,&v)
 	if err!=nil{
 		logFile.LogWarnf(dir,err)
 	}
+	p.Params=v
+	logFile.LogNotice(dir,*p)
+	logFile.LogDebug(dir,string(datajson))
 	return p
 }
 

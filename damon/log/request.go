@@ -7,6 +7,7 @@ import (
 	"github.com/xiazemin/aladdin/damon/url"
 	"github.com/xiazemin/aladdin/damon/config"
 	"github.com/xiazemin/aladdin/damon/logFile"
+	"go/src/fmt"
 )
 type Request struct {
 	Method string
@@ -59,9 +60,12 @@ func (this * Request)  ParseParam(dir string,request string,sep string) string {
 	result:=strings.Split(request, sep)
 	logFile.LogDebug(dir,"param result:")
 	logFile.LogDebug(dir,result)
+	logFile.LogDebug(dir,fmt.Sprintf(" before param match result: %+v",result))
 	if len(result)==paramLength {
 		r, _ := regexp.Compile("^([A-Za-z0-9_\\-]+=[A-Za-z0-9_%\\-.\\+]+)?(&[A-Za-z0-9_\\-]+=[A-Za-z0-9_%\\-\\.\\?&=:\\+]+)*$")
+
 		if r.MatchString(result[0]){
+			logFile.LogDebug(dir,fmt.Sprintf("param match result: %+v",result[0]))
 			return result[0]
 		}
 	}

@@ -73,20 +73,21 @@
             return s
         }
 
-        function Html2Json(uri,contentId,type,resultId) {
+        function Html2Json(uri,contentId,type,resultId,fileNameId) {
             js=getChildNode(document.getElementById(contentId));
+            fileName= $('#'+fileNameId).val();
             //alert(JSON.stringify(js));
             $.ajax({
                 type: "GET",
                 url: "{{ .Url }}" + uri,
-                data: {"json_data":JSON.stringify(js)},
+                data: {"json_data":JSON.stringify(js),"file_name":fileName},
                 dataType: type,
                 success: function (data) {
                     if(typeof data == 'object' && data){
-                        alert(JSON.stringify(data));
+                       // alert(JSON.stringify(data));
                         data=JSON.stringify(data);
                    }else {
-                       alert(data);
+                      // alert(data);
                     }
                     $('#'+resultId).empty();   //清空resText里面的所有内容
                     $('#'+resultId).html(data);
@@ -138,7 +139,7 @@
 <hr/>
 <div style="width: 100%; height: 200px; border: 1px; display: block;">
     编辑配置字段:<input type="txt" value="配置字段文件" id="conf_edit"/>
-    <input type="button" value="保存配置字段文件" onclick="Html2Json('/file/data/confEdit/','conf_content','json','update_result')">
+    <input type="button" value="保存配置字段文件" onclick="Html2Json('/file/data/confEdit/','conf_content','json','update_result','conf_edit')">
 </div>
 <span id="update_result"></span>
 <hr/>

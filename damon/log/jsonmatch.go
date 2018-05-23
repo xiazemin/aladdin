@@ -73,12 +73,14 @@ func MergeMap(logDir string,a map[string]interface {},b map[string]interface {})
 
 func MatchJson(defaultDir string,configName string,datajson string)string{
 	confParams:=config.LocadParams(defaultDir,configName)
+	logFile.LogNotice(defaultDir,confParams)
+	logFile.LogNotice(defaultDir,datajson)
 	var keys []string
 	for k,_:=range confParams.Params{
 		keys=append(keys,k)
 	}
 
-	var raw map[string] interface{}
+	var raw interface{}
 	logFile.LogNotice(defaultDir,datajson)
 	err:=json.Unmarshal([]byte(datajson),&raw)
 	if err != nil {
@@ -96,7 +98,32 @@ func MatchJson(defaultDir string,configName string,datajson string)string{
 	return string(j)
 }
 
-func Match(conf []string,jsonData map[string]interface{}) map[string]interface {}{
+func Match(conf []string,jsonData interface{}) interface {}{
+	if lv,ok:=jsonData.([]interface{});ok{
+		return MatchList(conf,lv)
+	}else if mv,ok:=jsonData.(map[string]interface{});ok{
+		return MatchMap(conf,mv)
+	}else {
+		return jsonData
+	}
+}
+
+func MatchList(conf []string,jsonData []interface{}) []interface{} {
+	var l []interface{}
+	for _,v:=range jsonData{
+		var r interface{}
+		if lv,ok:=v.([]interface{});ok{
+			r=MatchList(conf,lv)
+		}else if mv,ok:=v.(map[string]interface{});ok{
+			r=MatchMap(conf,mv)
+		}else {
+			r=v
+		}
+		l=append(l,r)
+	}
+	return l
+}
+func MatchMap(conf []string,jsonData map[string]interface{}) map[string]interface {}{
 	result:=make(map[string]interface{},0)
 	for k,v:=range jsonData{
 	re:=SubMatch(conf,k ,v)

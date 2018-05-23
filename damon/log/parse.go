@@ -5,6 +5,7 @@ import (
 	"os"
 	"github.com/xiazemin/aladdin/damon/logFile"
 	"go/src/strings"
+	"go/src/fmt"
 )
 
 func Parse(dir string,fileName string,lineEnd byte) []*Request {
@@ -26,8 +27,9 @@ func Parse(dir string,fileName string,lineEnd byte) []*Request {
 		r=r.ParseLine(dir,line)
 		logFile.LogDebug(dir,line)
 		logFile.LogDebug(dir,r)
+		logFile.LogDebug(dir,fmt.Sprintf("\n before get uri and param:%+v",r))
 		if(r!=nil && r.Uri!=""){
-			logFile.LogDebug(dir,"\n get uri and param:")
+			logFile.LogDebug(dir,fmt.Sprintf("\n get uri and param:%+v",r))
 			logFile.LogDebug(dir,r.Uri)
 			logFile.LogDebug(dir,r)
 			reqList=append(reqList,r)
