@@ -49,22 +49,22 @@ func NewWatcher(dir string,paths []string,dirExe string,name string) {
 			        logFile.LogDebug(dir,fmt.Sprintf("eventTime:%+v,time %+v,isBuild:%+v,event:%+v",eventTime[e.Name],mt,isbuild,e))
 				if isbuild {
 					logFile.LogWarnf(dir,fmt.Sprintf("[EVEN] %s\n", e))
-					//go func() {
-					//	// Wait 1s before autobuild util there is no file change.
-					//	scheduleTime = time.Now().Add(defaultTimeSpan * time.Millisecond)
-					//	for {
-					//		logFile.LogDebug(dir,scheduleTime)
-					//		time.Sleep(scheduleTime.Sub(time.Now()))
-					//		if time.Now().After(scheduleTime) {
-					//		logFile.LogDebug(dir,time.Now())
-					//				break
-					//		}
-					//		return
-					//	}
-					//
-					//	AutoRun(dir,dirExe,name)
-					//}()
-					AutoRun(dir,dirExe,name)
+					go func() {
+						// Wait 1s before autobuild util there is no file change.
+						scheduleTime = time.Now().Add(defaultTimeSpan * time.Second)
+						for {
+							logFile.LogDebug(dir,scheduleTime)
+							time.Sleep(scheduleTime.Sub(time.Now()))
+							if time.Now().After(scheduleTime) {
+							logFile.LogDebug(dir,time.Now())
+									break
+							}
+							return
+						}
+
+						AutoRun(dir,dirExe,name)
+					}()
+					//AutoRun(dir,dirExe,name)
 				}
 			case err := <-watcher.Error:
 				logFile.LogWarnf(dir,fmt.Sprintf("[WARN] %s\n", err.Error())) // No need to exit here

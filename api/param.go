@@ -41,7 +41,11 @@ func (this *Data)Edit(w http.ResponseWriter,r *http.Request,defaultDir string,lo
 		logFile.LogNotice(logDir,p.ParamInfo)
 		logFile.LogNotice(logDir,newP)
 		p.ParamInfo=newP
-		config.UpdateParams(defaultDir, configParams, p.ParamInfo)
+		if p.ParamInfo==nil{
+			logFile.LogWarnf(logDir,p)
+		}else {
+			config.UpdateParams(defaultDir, configParams, p.ParamInfo)
+		}
 	}
 
 	logFile.LogDebug(logDir,viewDir+"param/"+"edit.html")

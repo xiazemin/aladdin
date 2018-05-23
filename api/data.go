@@ -32,7 +32,14 @@ func (this*Data)Handle(uris []string,w http.ResponseWriter,r *http.Request,defau
 		resp=this.New(w,r,defaultDir,logDir,viewDir,configData)
 	case "edit":
 		resp=this.Edit(w,r,defaultDir,logDir,viewDir,configParams)
-
+	case "log2json":
+		resp=this.Log2json(w,r,defaultDir,logDir,viewDir,configParams)
+	case "log2conf":
+		resp=this.Log2conf(w,r,defaultDir,logDir,viewDir,configParams)
+	case "confLoad":
+		resp=this.ConfLoad(w,r,defaultDir,logDir,viewDir,configParams)
+	case "confEdit":
+		resp=this.ConfEdit(w,r,defaultDir,logDir,viewDir,configParams)
 	default:
 		resp=r.RequestURI+fmt.Sprintf("   %d  %+v  %s  %s",len(uris),uris,uris[2],uris[3])
 	}
@@ -54,8 +61,26 @@ func (this *Data)Get(w http.ResponseWriter,r *http.Request,defaultDir string,log
 	return viewDir+"\n"+str
 }
 
+type UpdateData struct {
+	Url string
+	Dir string
+}
 func (this *Data)Update(w http.ResponseWriter,r *http.Request,defaultDir string,logDir string,viewDir string)string{
-	return defaultDir
+	dir:=file.GetDir(defaultDir+"data/","data/",logDir)
+	str:=file.GetPrintDirs(dir,0)
+	str=strings.Replace(strings.Replace(str,"\n","<br/>",-1),
+		" ","&nbsp;",-1)
+
+	var ud UpdateData
+	ip:=netenv.GetLocalIp(logDir)
+	ud.Url="http://"+ip+":8088"
+	ud.Dir=str
+
+	templ, _ := ioutil.ReadFile(viewDir+"data/"+"update.html")
+	t := template.New("get log file ")
+	t.Parse(string(templ))
+	t.Execute(w,ud )
+	return viewDir+"\n"+str
 }
 
 func (this *Data)parseDescription(r *http.Request,defaultDir string,logDir string) config.Description{

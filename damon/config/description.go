@@ -30,6 +30,7 @@ func LoadLogDataDes(dirBase string,fileName string)[]Description  {
 
 func GetSelectedLogFiles(dirBase string,fileName string,user string,date string,model string)[]string  {
 	desList:=LoadLogDataDes(dirBase,fileName)
+	logFile.LogNotice(dirBase,desList)
 	var selectedLog []string
 	for _,des:=range desList{
 		if des.Selected && des.User==user && des.Date==date && model==des.Model{

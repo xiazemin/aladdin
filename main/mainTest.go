@@ -17,12 +17,23 @@ log_format main '$remote_addr - $remote_user [$time_local]  '
  */
 const defaultDir  ="/Users/didi/aladdin/xiazemin/10.96.76.97/2018-05-14-11/case1/"
 const configData  = "config/data.json"
+const configParams="config/params.json"
 const globalConfig  ="globalConfig.json"
+const defaultFile  ="data/xiazemin/raw.log"
+const defaultJson  ="data/xiazemin/raw.json"
+const defaultConf  ="data/xiazemin/rawConf.json"
 func main()  {
+	raw:=string(json.Load(defaultDir+defaultJson))
+	res:=log.MatchJson(defaultDir,configParams,raw)
+	fmt.Println(res)
+	fmt.Println(log.UpdateJson(defaultDir,raw,res))
+	file.Write(defaultDir, defaultConf, string(res))
+
+	//MatchJson(defaultDir string,configParams string,datajson string)string
+	//UpdateJson(logDir string,datajson string,param string)string
 	fmt.Print(strings.Contains("price=91\u0026passe=113\u0026nt=1\u0026trav=34","\u0026"))
 	uj:=new(api.UrlJson)
 	fmt.Println(uj.Url2Json("price=91\u0026passe=113\u0026nt=1\u0026trav=34",defaultDir))
-	return
 	uri:="/www.baidu.com?rsv_enter=1&rqlang=cn&rsv_bp=0&rsv_sug3=5&rsv_idx=1&rsv_sug7=100&rsv_t=e3d0gUXTMejJdTYOwTOhMwTKhTmIVyTYRVM5gYbU%2FiiLObrnxUcZBLs74SQ&tn=baidu&rsv_sug4=4847&wd=tes&f=8&https://www.baidu.com/s?ie=utf-8&inputT=1058&rsv_pq=ff88e6380000669f&rsv_sug1=3&rsv_sug2=0"
 
 	fmt.Println(uj.MatchUrl(uri,defaultDir))
